@@ -1,0 +1,80 @@
+resource "aws_default_subnet" "default1a" {
+  availability_zone = "eu-west-1a"
+  tags = {
+    Name = "Default subnet for eu-west-1a"
+  }
+}
+resource "aws_default_subnet" "default1b" {
+  availability_zone = "eu-west-1b"
+  tags = {
+    Name = "Default subnet for eu-west-1b"
+  }
+}
+
+resource "aws_lb" "redirector" {
+  name               = "redirector"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.HTTPAny.id]
+  subnets            = [aws_default_subnet.default1a.id, aws_default_subnet.default1b.id]
+  tags = {
+    Environment = "production"
+  }
+}
+
+resource "aws_lb_listener" "redirector_listener_http" {
+  load_balancer_arn = "${aws_lb.redirector.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+  
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+  
+}
+
+resource "aws_lb_listener" "redirector_listener_https" {
+  load_balancer_arn = "${aws_lb.redirector.arn}"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.certificateARN
+
+  default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Not found"
+      status_code  = "404"
+    }
+  }
+}
+
+module "NginxRule"{
+  source ="./alb_module"
+  name="NginxRule"
+  port = 80
+  instanceID = module.aws_instance_nginx.id
+  albListenerID = aws_lb_listener.redirector_listener_https.arn
+  priority = 100
+  patterns = ["*"]
+  domain = ["mytest.hacklikeapornstar.com"]
+}
+
+module "SilentRule"{
+  source ="./alb_module"
+  name="silentRule"
+  port = 5080
+  instanceID = module.aws_instance_c2.id
+  albListenerID = aws_lb_listener.redirector_listener_https.arn
+  priority = 90
+  patterns = ["/st/*"]
+  domain = ["mytest.hacklikeapornstar.com"]
+}
