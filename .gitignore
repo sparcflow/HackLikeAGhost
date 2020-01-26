@@ -14,9 +14,10 @@
 !infra
 !ec2_module
 !S3Backdoor
-!S3C2
-!S3Fetcher
+!S3Op
+!S3Agent
 !containers
 !nginx
 !silent
 !html
+!makefile
