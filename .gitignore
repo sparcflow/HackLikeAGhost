@@ -17,6 +17,7 @@
 !S3Op
 !S3Agent
 !containers
+!LambdaBackdoor
 !nginx
 !silent
 !html

@@ -84,6 +84,7 @@ module "aws_instance_c2" {
 #!/bin/bash
 CONTAINER="${var.C2Container}";
 ${file("./scripts/silent.sh")}
+rm /var/lib/cloud/instances/*/sem/config_scripts_user
 EOF
 }
 
@@ -100,5 +101,6 @@ CONTAINER="${var.nginxContainer}";
 
 sleep 30
 ${file("./scripts/nginx.sh")}
+rm /var/lib/cloud/instances/*/sem/config_scripts_user
 EOF
 }
