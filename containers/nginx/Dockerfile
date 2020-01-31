@@ -1,8 +1,7 @@
 FROM staticfloat/nginx-certbot
 
 COPY *.conf /etc/nginx/conf.d/
-COPY html/* /var/www/html/
-RUN chown -R www-data:www-data /var/www
+COPY --chown=www-data:www-data html/* /var/www/html/
 
 COPY init.sh /scripts/
 
