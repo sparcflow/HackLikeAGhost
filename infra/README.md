@@ -29,11 +29,12 @@ git clone https://github.com/HackLikeAPornstar/GreschPolitico
 cd GreschPolitico/infra
 ```  
 4. Edit the values in variables.tf to suit your needs:
-   1. **domain** is the name of the domain
-   2. **certificateARN** ARN of the certificate if you route traffic through an ALB instead of Nginx
-   3. **adminIP** your IP to be SSH into the machines  
-   4. **nginxContainer** Name of the Nginx container to run
-   5. **C2Container** Name of the C2 container to run
+   1. **adminIP** your IP to allow SSH into the machines  
+   2. **C2Container** Name of the C2 container to run
+   3. **certificateARN** *optional* ARN of the certificate if you route traffic through an ALB instead of Nginx 
+   4. **domain** is the name of the domain name   
+   5. **nginxContainer** Name of the Nginx container to run   
+   6. **sshkey** Your public ssh key
    
 5. Create your resources:
 ```
@@ -44,16 +45,12 @@ nginx_ip_address: xx.xxx.xx.xx
 c2_ip_address: yy.yy.yyy.yy
 
 ``` 
-6. Create your resources:
-```
-./terraform apply
-```  
-7. Redirect the domain name to the Nginx IP on your DNS dashboard, wait 60 seconds for everything to get setup and enjoy!  
+6. Redirect the domain name to the Nginx IP on your DNS dashboard, wait 60 seconds for everything to get setup and enjoy!  
 
 
 ## Usage
 
-The serves run the two containers defined in ../containers. Check their Readme files to know how they operate.  
+The servers run the two containers defined in ../containers. Check their Readme files to know how they operate.  
 Briefly: the Nginx container serves decoy pages from www folder.   
 It redirects URLs starting with "/st" and and "/msf" to the backend C2 containers on ports (5080 and 9910).  
 Make sure to use these settings when configuring your listener.
@@ -66,8 +63,9 @@ python3.7 st.py wss://username:password@yy.yy.yyy.yy:5000
 ``` 
 ## Using an ALB to route traffic
 If you wish to use an AWS ALB to route traffic to C2, renambe "alb.tf.disabled" to "alb.tf". Configure a certificate on [AWS ACM](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html), and put its value in variables.tf/certificateARN.  
-Using an ALB makes it easier to add new routes to new listeners, as opposed to an Nginx server that would need to be rebooted every time.  
-The Nginx server would only be used to serve decoy pages.
+
+Using an ALB makes it easier to add new routes to new listeners, as opposed to an Nginx server that would need to be restarted every time.  
+In this scenario, the Nginx server would only be used to serve decoy pages.
 
 ## Customization
 Change the values in variables.tf to suit your needs. The scripts folder contains instructions running at the boot of the machine. You can edit it to start any container you wish.  
