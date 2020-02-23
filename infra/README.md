@@ -71,6 +71,10 @@ In this scenario, the Nginx server would only be used to serve decoy pages.
 Change the values in variables.tf to suit your needs. The scripts folder contains instructions running at the boot of the machine. You can edit it to start any container you wish.  
 They get injected in the main.tf file in the user-data section of EC2 resources.
 
+## TODO
+- Register a zone using route53
+- generate a certificate using ACM
+
 # Credits
 - byt3bl33d3r for SILENTTRINITY: https://github.com/byt3bl33d3r/SILENTTRINITY
 - staticfloat for the automated Nginx setup: https://github.com/staticfloat/docker-nginx-certbot 
